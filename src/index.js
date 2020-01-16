@@ -74,8 +74,8 @@ canvas.addEventListener("mousemove", function(event) {
   if (mp) {
     let newMousePos = getMousePosition(event, canvas);
     position = {
-      x: Math.floor(position.x - (newMousePos.x - mp.x)),
-      y: Math.floor(position.y - (newMousePos.y - mp.y))
+      x: Math.floor(position.x - (newMousePos.x - mp.x) / zoom),
+      y: Math.floor(position.y - (newMousePos.y - mp.y) / zoom)
     };
     mp = newMousePos;
     changePositionInfo();
