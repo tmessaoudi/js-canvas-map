@@ -1,5 +1,4 @@
 import { getMousePosition, addReference, addMiddleCross } from "./utils/canvas";
-import { inv, applyMatrixToPoint } from "./utils/matrix";
 
 let canvas = document.getElementById("game");
 canvas.height = window.innerHeight;
@@ -11,7 +10,7 @@ let minusBtn = document.getElementById("zoom-out");
 
 let position = { x: canvas.width / 2, y: canvas.height / 2 };
 let mp = undefined;
-let zoom = 0.5;
+let zoom = 100;
 
 window.canvasCtx = ctx;
 
@@ -23,7 +22,7 @@ const resetCanvas = () => {
 
 const changeZoomInfo = () => {
   const zoomInfoHTML = document.getElementById("zoomInfo");
-  zoomInfoHTML.innerHTML = Math.floor(zoom * 100) + "%";
+  zoomInfoHTML.innerHTML = Math.floor(zoom) + "%";
 };
 
 const changePositionInfo = () => {
@@ -42,7 +41,7 @@ const draw = () => {
   addMiddleCross(ctx);
 
   ctx.translate(canvas.width / 2, canvas.height / 2);
-  ctx.scale(zoom, zoom);
+  ctx.scale(zoom / 100, zoom / 100);
   ctx.translate(-position.x, -position.y);
 
   // ctx.setTransform(
@@ -74,8 +73,8 @@ canvas.addEventListener("mousemove", function(event) {
   if (mp) {
     let newMousePos = getMousePosition(event, canvas);
     position = {
-      x: Math.floor(position.x - (newMousePos.x - mp.x) / zoom),
-      y: Math.floor(position.y - (newMousePos.y - mp.y) / zoom)
+      x: Math.floor(position.x - (newMousePos.x - mp.x) / (zoom / 100)),
+      y: Math.floor(position.y - (newMousePos.y - mp.y) / (zoom / 100))
     };
     mp = newMousePos;
     changePositionInfo();
@@ -85,36 +84,30 @@ canvas.addEventListener("mousemove", function(event) {
 
 canvas.addEventListener("mouseup", function(event) {
   document.body.style.cursor = "default";
-  console.log(
-    applyMatrixToPoint(inv([zoom, 0, 0, zoom, 0, 0]), {
-      x: position.x,
-      y: position.y
-    })
-  );
   mp = undefined;
 });
 
 canvas.addEventListener("wheel", function(event) {
-  if (zoom > 0.2 && event.deltaY > 0) {
-    zoom -= 0.1;
-  } else if (zoom < 5 && event.deltaY < 0) {
-    zoom += 0.1;
+  if (zoom > 10 && event.deltaY > 0) {
+    zoom -= 10;
+  } else if (zoom < 200 && event.deltaY < 0) {
+    zoom += 10;
   }
   changeZoomInfo();
   draw();
 });
 
 minusBtn.addEventListener("click", function(event) {
-  if (zoom > 0.2) {
-    zoom -= 0.1;
+  if (zoom > 10) {
+    zoom -= 10;
   }
   changeZoomInfo();
   draw();
 });
 
 plusBtn.addEventListener("click", function(event) {
-  if (zoom < 5) {
-    zoom += 0.1;
+  if (zoom < 200) {
+    zoom += 10;
   }
   changeZoomInfo();
   draw();
